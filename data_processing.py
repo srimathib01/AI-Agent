@@ -1,5 +1,5 @@
 def connect_google_sheets(spreadsheet_id: str):
-    # Example implementation to fetch Google Sheets data
+   
     import gspread
     from oauth2client.service_account import ServiceAccountCredentials
     
@@ -8,7 +8,7 @@ def connect_google_sheets(spreadsheet_id: str):
     client = gspread.authorize(credentials)
     
     sheet = client.open_by_key(spreadsheet_id)
-    worksheet = sheet.get_worksheet(0)  # Access the first worksheet
+    worksheet = sheet.get_worksheet(0) 
     
     data = worksheet.get_all_values()
     return data

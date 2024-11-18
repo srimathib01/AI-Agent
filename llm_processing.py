@@ -33,16 +33,16 @@ class LLMProcessor:
         """
         Process a single result with enhanced prompt engineering
         """
-        # Format search results for better context
+        
         formatted_results = self._format_search_results(result['search_results'])
         
-        # Construct an improved prompt
+       
         prompt = self._construct_prompt(result['entity'], query_template, formatted_results)
 
         try:
             response = self._get_llm_response(prompt)
             
-            # Validate and clean the response
+            
             cleaned_response = self._validate_response(response, result['entity'])
             return cleaned_response
 
@@ -100,11 +100,11 @@ ANSWER:"""
                 {"role": "user", "content": prompt}
             ],
             model=self.model,
-            temperature=0.1,  # Lower temperature for more consistent results
+            temperature=0.1, 
             max_tokens=100,
             top_p=0.95,
-            frequency_penalty=0.5,  # Reduce repetitive responses
-            presence_penalty=0.5,   # Encourage focus on key information
+            frequency_penalty=0.5,  
+            presence_penalty=0.5,   
             stream=False
         )
         
@@ -114,10 +114,10 @@ ANSWER:"""
         """
         Validate and clean the LLM response
         """
-        # Remove any explanatory text
+       
         cleaned_response = response.split('\n')[0].strip()
         
-        # Remove common prefixes that LLMs might add
+       
         prefixes_to_remove = [
             "Answer:", "Response:", "Result:", 
             f"{entity}:", "The answer is:", "Information:"
@@ -127,7 +127,7 @@ ANSWER:"""
             if cleaned_response.startswith(prefix):
                 cleaned_response = cleaned_response[len(prefix):].strip()
 
-        # Determine confidence based on response characteristics
+       
         confidence = 1.0 if cleaned_response.lower() != "not found" else 0.0
 
         return {

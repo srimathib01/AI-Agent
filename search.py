@@ -20,7 +20,7 @@ class SearchEngine:
             result = self._execute_search(entity, query)
             results.append(result)
             
-            # Rate limiting to avoid API throttling
+            
             time.sleep(1)
         
         return results
@@ -77,11 +77,11 @@ class SearchEngine:
                 processed_result = {
                     "title": result.get("title"),
                     "link": result.get("link"),
-                    "snippet": result.get("snippet"),  # Including snippet for better context
+                    "snippet": result.get("snippet"), 
                     "position": result.get("position")
                 }
                 
-                # Only include results with all required fields
+              
                 if all(processed_result.values()):
                     filtered_results.append(processed_result)
             

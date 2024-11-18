@@ -26,7 +26,7 @@ class AIAgentApp:
         """Process a single entity with retry logic"""
         for attempt in range(max_retries):
             try:
-                # Search phase
+                
                 search_result = self.search_engine._execute_search(
                     entity, 
                     query_template.format(entity=entity)
@@ -35,7 +35,7 @@ class AIAgentApp:
                 if search_result.get('error'):
                     raise Exception(search_result['error'])
                 
-                # LLM processing phase
+                
                 processed_result = self.llm_processor._process_single_result(
                     search_result,
                     query_template
@@ -50,7 +50,7 @@ class AIAgentApp:
                         "extracted_info": f"Error: {str(e)}",
                         
                     }
-                time.sleep(2 ** attempt)  # Exponential backoff
+                time.sleep(2 ** attempt)  
                 
         return {
             "entity": entity,
@@ -61,13 +61,13 @@ class AIAgentApp:
     def process_data(self, data: pd.DataFrame, main_column: str, query_template: str):
         """Process data with improved error handling and retries"""
         try:
-            # Get unique, non-empty entities
+          
             entities = data[main_column].dropna().unique().tolist()
             if not entities:
                 st.error("No valid entities found in the selected column.")
                 return
 
-            # Create containers for different types of output
+           
             progress_container = st.container()
             results_container = st.container()
             error_container = st.container()
@@ -77,7 +77,7 @@ class AIAgentApp:
                 progress_bar = st.progress(0)
                 status_text = st.empty()
                 
-            # Process entities
+            
             results = []
             failed_entities = []
             
@@ -88,7 +88,7 @@ class AIAgentApp:
                     result = self.process_entity_with_retry(entity, query_template)
                     results.append(result)
                     
-                    # If processing failed, add to failed entities list
+                   
                     if "Error" in str(result.get('extracted_info', '')):
                         failed_entities.append(entity)
                         
@@ -100,17 +100,17 @@ class AIAgentApp:
                        
                     })
                 
-                # Update progress
+                
                 progress_bar.progress((idx + 1) / len(entities))
             
-            # Create results DataFrame
+           
             results_df = pd.DataFrame(results)
             
-            # Clear progress indicators
+           
             progress_bar.empty()
             status_text.empty()
             
-            # Show results
+            
             with results_container:
                 st.success("Processing completed!")
                 self.display_results(results_df, failed_entities)
@@ -122,7 +122,7 @@ class AIAgentApp:
         """Display results with improved download options and error reporting"""
         st.subheader("Results")
         
-        # Display statistics
+       
         col1, col2, col3 = st.columns(3)
         with col1:
             st.metric("Total Processed", len(results_df))
@@ -132,20 +132,20 @@ class AIAgentApp:
         with col3:
             st.metric("Failed", len(failed_entities))
         
-        # Show results table
+       
         st.dataframe(results_df, use_container_width=True)
         
-        # Show failed entities if any
+       
         if failed_entities:
             with st.expander("Show Failed Entities"):
                 st.write("The following entities failed to process:")
                 for entity in failed_entities:
                     st.write(f"- {entity}")
         
-        # Download options
+        
         col1, col2 = st.columns(2)
         
-        # CSV download
+        
         with col1:
             csv = results_df.to_csv(index=False).encode('utf-8')
             st.download_button(
@@ -156,7 +156,7 @@ class AIAgentApp:
                 key='download-csv'
             )
         
-        # Excel download
+        
         with col2:
             buffer = io.BytesIO()
             with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
@@ -175,13 +175,13 @@ class AIAgentApp:
         """Main application logic"""
         st.title("AI Research Agent 🔍")
         
-        # Data source selection
+       
         data_source = st.radio(
             "Select Data Source:",
             ("Upload CSV File", "Connect to Google Sheets")
         )
         
-        # Data loading
+        
         data = None
         if data_source == "Upload CSV File":
             uploaded_file = st.file_uploader("Upload CSV File", type=["csv","xlsv"])
@@ -203,7 +203,7 @@ class AIAgentApp:
         if data is not None and not data.empty:
             st.write("Data Preview:", data.head())
             
-            # Query configuration
+           
             st.subheader("Configure Your Query")
             main_column = st.selectbox("Select the main column", data.columns)
             
